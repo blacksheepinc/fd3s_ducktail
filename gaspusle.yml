@@ -1,0 +1,54 @@
+esphome:
+  name: gas-pulse-meter
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+  password: "c5e9bdf76500880ec726d3c5f54969b4"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+#  ap:
+#    ssid: "Gas-Pulse-Meter Fallback Hotspot"
+#    password: "SJtD1EmiGJqu"
+
+captive_portal:
+
+sensor:
+  - platform: wifi_signal
+    name: GasPulseWiFi
+    update_interval: 60s
+    disabled_by_default: true
+    
+  - platform: pulse_meter
+    pin:
+      number: D5
+      mode:
+        input: true
+        pullup: true
+    name: 'Gas Usage'
+    internal_filter: 2000ms
+    internal: true
+    accuracy_decimals: 1
+    timeout: 80s
+    filters:
+      - multiply: 1
+    total:
+      name: "GasTotal"
+      id: totalGas
+      device_class: gas
+      state_class: total_increasing
+      unit_of_measurement: "m³"
+      accuracy_decimals: 2
+      filters:
+        - multiply: 0.01
